@@ -1,0 +1,19 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="Test.cpp" />
+    <ClCompile Include="..\WinAPIEx\WinAPIEx.cpp">
+      <Filter>WinAPIEx</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="WinAPIEx">
+      <UniqueIdentifier>{348410d3-3436-4189-aee2-f059d920f5f4}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\WinAPIEx\WinAPIEx.h">
+      <Filter>WinAPIEx</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>

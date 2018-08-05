@@ -1,0 +1,19 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="PayloadDll.cpp" />
+    <ClCompile Include="..\WinAPIEx\WinAPIEx.cpp">
+      <Filter>WinAPIEx</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="WinAPIEx">
+      <UniqueIdentifier>{e300c83d-dfad-4fbf-97ab-d4dcb144f13f}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\WinAPIEx\WinAPIEx.h">
+      <Filter>WinAPIEx</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>

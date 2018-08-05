@@ -1,0 +1,19 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="CreateSandbox.cpp" />
+    <ClCompile Include="..\WinAPIEx\WinAPIEx.cpp">
+      <Filter>WinAPIEx</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="WinAPIEx">
+      <UniqueIdentifier>{c5b9dd2f-5e0f-4360-b89d-0cc7eae7ddd5}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\WinAPIEx\WinAPIEx.h">
+      <Filter>WinAPIEx</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>
