@@ -108,9 +108,9 @@ namespace C
 			if (!data) return NULL;
 			PWCHAR result = new WCHAR[((length - 1) / 16 + 1) * 76 + 1];
 
-			for (int i = 0, offset = 0; i < length; i += 16)
+			for (DWORD i = 0, offset = 0; i < length; i += 16)
 			{
-				LPWSTR line = Int32ToString(i, 16);
+				LPWSTR line = UInt32ToString(i, 16);
 				StrCpyW(&result[offset], L"00000000");
 				StrCpyW(&result[offset + 8 - lstrlenW(line)], line);
 				StrCpyW(&result[offset + 8], L": ");
@@ -118,11 +118,11 @@ namespace C
 				delete line;
 				offset += 10;
 
-				for (int j = 0; j < 16; j++)
+				for (DWORD j = 0; j < 16; j++)
 				{
 					if (i + j < length)
 					{
-						LPWSTR number = Int32ToString(data[i + j], 16);
+						LPWSTR number = UInt32ToString(data[i + j], 16);
 						StrCpyW(&result[offset], L"00");
 						StrCpyW(&result[offset + 2 - lstrlenW(number)], number);
 						result[offset + 2] = L' ';
@@ -138,7 +138,7 @@ namespace C
 
 					offset += 3;
 				}
-				for (int j = 0; j < 16; j++)
+				for (DWORD j = 0; j < 16; j++)
 				{
 					if (i + j < length)
 					{
@@ -185,7 +185,7 @@ namespace C
 				result = new WCHAR[length + 1];
 				result[length] = L'\0';
 
-				for (int i = 0; i < length; i++) result[i] = L"0123456789abcdef"[data[i] & 15];
+				for (DWORD i = 0; i < length; i++) result[i] = L"0123456789abcdef"[data[i] & 15];
 				delete data;
 			}
 
@@ -367,7 +367,7 @@ namespace C
 				while (FindNextFileW(find, &data));
 				FindClose(find);
 
-				Array<LPWSTR> *result = new Array<LPWSTR>(files.size());
+				Array<LPWSTR> *result = new Array<LPWSTR>((int)files.size());
 				for (int i = 0; i < result->Count; i++) result->Values[i] = files[i];
 				return result;
 			}
@@ -397,7 +397,7 @@ namespace C
 			DWORD attributes = GetFileAttributesW(path);
 			return attributes != INVALID_FILE_ATTRIBUTES && (attributes & FILE_ATTRIBUTE_DIRECTORY) != FILE_ATTRIBUTE_DIRECTORY;
 		}
-		LPBYTE Read(LPCWSTR path)
+		LPBYTE Read(LPCWSTR path, LPDWORD bytesRead)
 		{
 			HANDLE file = CreateFileW(path, GENERIC_READ, 0, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
 			if (file == INVALID_HANDLE_VALUE) return NULL;
@@ -409,7 +409,11 @@ namespace C
 			{
 				result = new BYTE[size];
 
-				if (!ReadFile(file, result, size, NULL, NULL))
+				if (ReadFile(file, result, size, NULL, NULL))
+				{
+					*bytesRead = size;
+				}
+				else
 				{
 					delete result;
 					result = NULL;
@@ -571,7 +575,7 @@ namespace C
 						result = new Array<LPWSTR>(subKeyCount);
 						int resultIndex = 0;
 
-						for (int i = 0; i < subKeyCount; i++)
+						for (DWORD i = 0; i < subKeyCount; i++)
 						{
 							DWORD nameSize = maxKeyNameLength + 1;
 							name[0] = L'\0';
@@ -613,7 +617,7 @@ namespace C
 						result = new Array<LPWSTR>(valueCount);
 						int resultIndex = 0;
 
-						for (int i = 0; i < valueCount; i++)
+						for (DWORD i = 0; i < valueCount; i++)
 						{
 							DWORD nameSize = maxValueNameLength + 1;
 							name[0] = L'\0';

@@ -43,7 +43,7 @@ LPWSTR GetTime()
 	struct tm *timeInfo = localtime(&currentTime);
 
 	WCHAR buffer[50];
-	DWORD size = wcsftime(buffer, sizeof(buffer), L"%Y.%m.%d %H:%M:%S", timeInfo);
+	DWORD size = (DWORD)wcsftime(buffer, sizeof(buffer), L"%Y.%m.%d %H:%M:%S", timeInfo);
 
 	PWCHAR result = new WCHAR[size + 1];
 	StrCpyW(result, buffer);

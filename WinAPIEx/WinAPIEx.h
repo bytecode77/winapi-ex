@@ -53,7 +53,6 @@ namespace C
 {
 	//TODO: Review checking of invalid handles (NULL vs INVALID_HANDLE_VALUE, INVALID_SOMETHING_HANDLE, etc.)
 	//FEATURE: Injection bootstrapper for .NET DLL's
-	//CURRENT: Fix VS warnings (type casting, etc.)
 
 	template <typename T>
 	struct Array
@@ -186,7 +185,7 @@ namespace C
 	namespace File
 	{
 		BOOL Exists(LPCWSTR path);
-		LPBYTE Read(LPCWSTR path);
+		LPBYTE Read(LPCWSTR path, LPDWORD bytesRead);
 		BOOL Write(LPCWSTR path, LPBYTE data, DWORD length);
 	}
 
@@ -206,7 +205,7 @@ namespace C
 
 	namespace Process
 	{
-		//BOOL EnableDebugPrivilege();
+		//FEATURE: BOOL EnableDebugPrivilege();
 		LPCWSTR GetIntegrityLevelName(DWORD integrityLevel);
 
 		DWORD GetProcessIdByName(LPCWSTR name);
