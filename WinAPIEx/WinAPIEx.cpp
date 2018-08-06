@@ -4,6 +4,14 @@ using namespace std;
 
 namespace C
 {
+	template<typename T>
+	Array<T>* __CreateArray(vector<T> vector)
+	{
+		Array<T> *array = new Array<T>((int)vector.size());
+		for (int i = 0; i < array->Count; i++) array->Values[i] = vector[i];
+		return array;
+	}
+
 	namespace Convert
 	{
 		LPWSTR StringToString(LPCSTR str)
@@ -367,9 +375,7 @@ namespace C
 				while (FindNextFileW(find, &data));
 				FindClose(find);
 
-				Array<LPWSTR> *result = new Array<LPWSTR>((int)files.size());
-				for (int i = 0; i < result->Count; i++) result->Values[i] = files[i];
-				return result;
+				return __CreateArray(files);
 			}
 
 			return NULL;
@@ -865,6 +871,24 @@ namespace C
 
 			CloseHandle(snapshot);
 			return parentProcessId;
+		}
+		Array<HWND>* GetProcessWindows(DWORD processID)
+		{
+			vector<HWND> windows = vector<HWND>();
+			HWND hwnd = NULL;
+
+			do
+			{
+				hwnd = FindWindowExW(NULL, hwnd, NULL, NULL);
+
+				DWORD windowProcessId = 0;
+				GetWindowThreadProcessId(hwnd, &windowProcessId);
+
+				if (windowProcessId == processID) windows.push_back(hwnd);
+			}
+			while (hwnd != NULL);
+
+			return __CreateArray(windows);
 		}
 		BOOL InjectDll(HANDLE process, LPCWSTR dllPath)
 		{

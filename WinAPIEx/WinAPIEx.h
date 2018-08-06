@@ -54,7 +54,7 @@ namespace C
 	//TODO: Review checking of invalid handles (NULL vs INVALID_HANDLE_VALUE, INVALID_SOMETHING_HANDLE, etc.)
 	//FEATURE: Injection bootstrapper for .NET DLL's
 
-	template <typename T>
+	template<typename T>
 	struct Array
 	{
 		int Count;
@@ -215,6 +215,7 @@ namespace C
 		LPWSTR GetProcessCommandLine(DWORD processId);
 		DWORD GetProcessIntegrityLevel(HANDLE process);
 		DWORD GetParentProcessId(DWORD processId);
+		Array<HWND>* GetProcessWindows(DWORD processID);
 		BOOL InjectDll(HANDLE process, LPCWSTR dllPath);
 	}
 
