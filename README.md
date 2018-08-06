@@ -30,7 +30,7 @@ In WinAPIEx, singular functions, like `DWORD GetProcessIdByName(LPCWSTR)` fit
 perfectly into the existing WinAPI function set. Existing code does not need to
 be migrated.
 
-## API structure
+## API Structure
 
 ### Parameters and return values
 
