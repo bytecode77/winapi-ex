@@ -112,7 +112,7 @@ Compiled binaries for:
 ![](https://bytecode77.com/images/shared/fileicons/exe.png) Inject.exe<br />
 ![](https://bytecode77.com/images/shared/fileicons/exe.png) CreateSandbox.exe
 
-[![](https://bytecode77.com/images/shared/fileicons/zip.png) WinAPIEx 0.8.0 Binaries.zip](https://bytecode77.com/downloads/framework/winapi-ex/WinAPIEx%200.8.0%20Binaries.zip)
+[![](https://bytecode77.com/images/shared/fileicons/zip.png) WinAPIEx 0.8.1 Binaries.zip](https://bytecode77.com/downloads/framework/winapi-ex/WinAPIEx%200.8.1%20Binaries.zip)
 
 ## Project Page
 
