@@ -30,7 +30,7 @@ In WinAPIEx, singular functions, like `DWORD GetProcessIdByName(LPCWSTR)` fit
 perfectly into the existing WinAPI function set. Existing code does not need to
 be migrated.
 
-## API structure
+## API Structure
 
 ### Parameters and return values
 
@@ -110,9 +110,9 @@ Compiled binaries for:
 ![](https://bytecode77.com/images/shared/fileicons/exe.png) PayloadExe.exe<br />
 ![](https://bytecode77.com/images/shared/fileicons/dll.png) PayloadDll.dll<br />
 ![](https://bytecode77.com/images/shared/fileicons/exe.png) Inject.exe<br />
-![](https://bytecode77.com/images/shared/fileicons/exe.png) CreateSandbox.exe<br />
+![](https://bytecode77.com/images/shared/fileicons/exe.png) CreateSandbox.exe
 
-[![](https://bytecode77.com/images/shared/fileicons/zip.png) WinAPIEx 0.8.0 Binaries.zip](https://bytecode77.com/downloads/framework/winapi-ex/WinAPIEx%200.8.0%20Binaries.zip)
+[![](https://bytecode77.com/images/shared/fileicons/zip.png) WinAPIEx 0.8.1 Binaries.zip](https://bytecode77.com/downloads/framework/winapi-ex/WinAPIEx%200.8.1%20Binaries.zip)
 
 ## Project Page
 

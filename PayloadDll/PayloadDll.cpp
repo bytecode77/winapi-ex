@@ -6,7 +6,7 @@
  * ║   Copyright (c) 2018, bytecode77                                                     ║
  * ║   All rights reserved.                                                               ║
  * ║                                                                                      ║
- * ║   Version 0.8.0                                                                      ║
+ * ║   Version 0.8.1                                                                      ║
  * ║   https://bytecode77.com/framework/winapi-ex                                         ║
  * ║                                                                                      ║
  * ╟──────────────────────────────────────────────────────────────────────────────────────╢
@@ -43,7 +43,7 @@ LPWSTR GetTime()
 	struct tm *timeInfo = localtime(&currentTime);
 
 	WCHAR buffer[50];
-	DWORD size = wcsftime(buffer, sizeof(buffer), L"%Y.%m.%d %H:%M:%S", timeInfo);
+	DWORD size = (DWORD)wcsftime(buffer, sizeof(buffer), L"%Y.%m.%d %H:%M:%S", timeInfo);
 
 	PWCHAR result = new WCHAR[size + 1];
 	StrCpyW(result, buffer);
