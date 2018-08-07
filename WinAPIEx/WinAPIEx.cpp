@@ -113,7 +113,6 @@ namespace C
 		}
 		LPWSTR BytesToHexView(LPBYTE data, DWORD length)
 		{
-			if (!data) return NULL;
 			PWCHAR result = new WCHAR[((length - 1) / 16 + 1) * 76 + 1];
 
 			for (DWORD i = 0, offset = 0; i < length; i += 16)
@@ -185,7 +184,7 @@ namespace C
 		}
 		LPWSTR HexadecimalString(DWORD length)
 		{
-			PWCHAR result = NULL;
+			LPWSTR result = NULL;
 
 			LPBYTE data = Bytes(length);
 			if (data)
@@ -464,8 +463,6 @@ namespace C
 
 		LPWSTR GetValueString(HKEY hive, LPCWSTR subkey, LPCWSTR name)
 		{
-			if (!hive || !subkey || !name) return NULL;
-
 			HKEY key = __OpenKey(hive, subkey, KEY_QUERY_VALUE);
 			if (!key) return NULL;
 
@@ -486,8 +483,6 @@ namespace C
 		}
 		BOOL GetValueDword(HKEY hive, LPCWSTR subkey, LPCWSTR name, PDWORD value)
 		{
-			if (!hive || !subkey || !name) return FALSE;
-
 			HKEY key = __OpenKey(hive, subkey, KEY_QUERY_VALUE);
 			if (!key) return FALSE;
 
@@ -499,8 +494,6 @@ namespace C
 		}
 		BOOL SetValueString(HKEY hive, LPCWSTR subkey, LPCWSTR name, LPCWSTR value, BOOL isExpandedString)
 		{
-			if (!hive || !subkey || !name || !value) return FALSE;
-
 			HKEY key = __OpenKey(hive, subkey, KEY_ALL_ACCESS);
 			if (!key) return FALSE;
 
@@ -511,8 +504,6 @@ namespace C
 		}
 		BOOL SetValueDword(HKEY hive, LPCWSTR subkey, LPCWSTR name, DWORD value)
 		{
-			if (!hive || !subkey || !name) return FALSE;
-
 			HKEY key = __OpenKey(hive, subkey, KEY_ALL_ACCESS);
 			if (!key) return FALSE;
 
@@ -523,8 +514,6 @@ namespace C
 		}
 		BOOL DeleteValue(HKEY hive, LPCWSTR subkey, LPCWSTR name)
 		{
-			if (!hive || !subkey || !name) return FALSE;
-
 			HKEY key = __OpenKey(hive, subkey, KEY_ALL_ACCESS);
 			if (!key) return FALSE;
 
@@ -536,8 +525,6 @@ namespace C
 
 		BOOL CreateKey(HKEY hive, LPCWSTR subkey, LPCWSTR name)
 		{
-			if (!hive || !subkey || !name) return FALSE;
-
 			HKEY key = __OpenKey(hive, subkey, KEY_ALL_ACCESS);
 			if (!key) return FALSE;
 
@@ -551,8 +538,6 @@ namespace C
 		}
 		BOOL DeleteKey(HKEY hive, LPCWSTR subkey, LPCWSTR name)
 		{
-			if (!hive || !subkey || !name) return FALSE;
-
 			HKEY key = __OpenKey(hive, subkey, KEY_ALL_ACCESS);
 			if (!key) return FALSE;
 
@@ -846,8 +831,6 @@ namespace C
 		}
 		DWORD GetParentProcessId(DWORD processId)
 		{
-			if (processId == 0) return 0;
-
 			HANDLE snapshot = CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS, 0);
 			if (snapshot == INVALID_HANDLE_VALUE) return 0;
 
@@ -905,6 +888,67 @@ namespace C
 			if (!CreateRemoteThread(process, NULL, NULL, (LPTHREAD_START_ROUTINE)loadLibraryAddress, allocatedMemoryAddress, 0, NULL)) return FALSE;
 
 			return TRUE;
+		}
+	}
+
+	namespace Service
+	{
+		SC_HANDLE GetServiceByName(LPCWSTR name)
+		{
+			SC_HANDLE serviceManager = OpenSCManagerW(NULL, NULL, SC_MANAGER_ALL_ACCESS);
+			if (!serviceManager) return NULL;
+
+			SC_HANDLE service = OpenServiceW(serviceManager, name, SC_MANAGER_ALL_ACCESS);
+
+			CloseServiceHandle(serviceManager);
+			return service;
+		}
+		DWORD GetServiceState(SC_HANDLE service)
+		{
+			SERVICE_STATUS_PROCESS status;
+			DWORD bytesNeeded;
+			if (!QueryServiceStatusEx(service, SC_STATUS_PROCESS_INFO, (LPBYTE)&status, sizeof(SERVICE_STATUS_PROCESS), &bytesNeeded)) return 0;
+
+			return status.dwCurrentState;
+		}
+		DWORD GetServiceProcessId(SC_HANDLE service)
+		{
+			SERVICE_STATUS_PROCESS status;
+			DWORD bytesNeeded;
+			if (!QueryServiceStatusEx(service, SC_STATUS_PROCESS_INFO, (LPBYTE)&status, sizeof(SERVICE_STATUS_PROCESS), &bytesNeeded)) return 0;
+
+			return status.dwProcessId;
+		}
+		BOOL StartServiceWait(SC_HANDLE service, DWORD expectedState, DWORD delayMilliseconds, DWORD timeoutMilliseconds)
+		{
+			BOOL result = FALSE;
+			DWORD startTime = GetTickCount();
+
+			while (!result && GetTickCount() - startTime < timeoutMilliseconds)
+			{
+				StartServiceW(service, 0, NULL);
+				Sleep(delayMilliseconds);
+
+				result = GetServiceState(service) == expectedState;
+			}
+
+			return result;
+		}
+		BOOL ControlServiceWait(SC_HANDLE service, DWORD control, DWORD expectedState, DWORD delayMilliseconds, DWORD timeoutMilliseconds)
+		{
+			BOOL result = FALSE;
+			DWORD startTime = GetTickCount();
+			SERVICE_STATUS_PROCESS status;
+
+			while (!result && GetTickCount() - startTime < timeoutMilliseconds)
+			{
+				ControlService(service, control, (LPSERVICE_STATUS)&status);
+				Sleep(delayMilliseconds);
+
+				result = GetServiceState(service) == expectedState;
+			}
+
+			return result;
 		}
 	}
 

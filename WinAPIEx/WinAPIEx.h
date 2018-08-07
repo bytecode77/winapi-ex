@@ -205,6 +205,7 @@ namespace C
 
 	namespace Process
 	{
+		//FEATURE: GetAllProcesses()
 		//FEATURE: BOOL EnableDebugPrivilege();
 		LPCWSTR GetIntegrityLevelName(DWORD integrityLevel);
 
@@ -219,7 +220,15 @@ namespace C
 		BOOL InjectDll(HANDLE process, LPCWSTR dllPath);
 	}
 
-	//FEATURE: namespace Service { ... }
+	namespace Service
+	{
+		//FEATURE: GetAllServices()
+		SC_HANDLE GetServiceByName(LPCWSTR name);
+		DWORD GetServiceState(SC_HANDLE service);
+		DWORD GetServiceProcessId(SC_HANDLE service);
+		BOOL StartServiceWait(SC_HANDLE service, DWORD expectedState, DWORD delayMilliseconds, DWORD timeoutMilliseconds);
+		BOOL ControlServiceWait(SC_HANDLE service, DWORD control, DWORD expectedState, DWORD delayMilliseconds, DWORD timeoutMilliseconds);
+	}
 
 	namespace FileOperation
 	{
