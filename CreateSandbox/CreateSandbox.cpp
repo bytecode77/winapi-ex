@@ -6,7 +6,7 @@
  * ║   Copyright (c) 2018, bytecode77                                                     ║
  * ║   All rights reserved.                                                               ║
  * ║                                                                                      ║
- * ║   Version 0.8.1                                                                      ║
+ * ║   Version 0.8.2                                                                      ║
  * ║   https://bytecode77.com/framework/winapi-ex                                         ║
  * ║                                                                                      ║
  * ╟──────────────────────────────────────────────────────────────────────────────────────╢
@@ -35,30 +35,27 @@
  * ╙──────────────────────────────────────────────────────────────────────────────────────╜
  */
 
-#include "..\WinAPIEx\WinAPIEx.h"
+#include "../WinAPIEx/WinAPIEx.h"
 
 int CALLBACK WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow)
 {
 	BOOL result = FALSE;
-	C::Array<LPWSTR> *arguments = C::Environment::GetCommandLineArgs();
+	C::Array<LPWSTR> arguments = *C::Environment::GetCommandLineArgs();
 
-	if (arguments)
+	LPWSTR commandLine = NULL;
+
+	if (arguments.Count() <= 1)
 	{
-		LPWSTR commandLine = NULL;
-
-		if (arguments->Count <= 1)
-		{
-			commandLine = new WCHAR[100];
-			StrCpyW(commandLine, L"C:\\Windows\\System32\\cmd.exe /T:4F");
-		}
-		else
-		{
-			commandLine = arguments->Values[1];
-		}
-
-		DWORD processId;
-		if (C::Process::CreateProcessWithIntegrity(commandLine, SECURITY_MANDATORY_LOW_RID, &processId)) result = TRUE;
+		commandLine = new WCHAR[100];
+		StrCpyW(commandLine, L"C:\\Windows\\System32\\cmd.exe /T:4F");
 	}
+	else
+	{
+		commandLine = arguments[1];
+	}
+
+	DWORD processId;
+	if (C::Process::CreateProcessWithIntegrity(commandLine, SECURITY_MANDATORY_LOW_RID, &processId)) result = TRUE;
 
 	return result ? 0 : 1;
 }

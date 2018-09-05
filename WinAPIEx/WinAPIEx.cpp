@@ -1,11 +1,20 @@
 #include "WinAPIEx.h"
-#include <vector>
-using namespace std;
 
 namespace C
 {
 	namespace Convert
 	{
+		void __TrimDecimalString(PWCHAR str)
+		{
+			int length = lstrlenW(str);
+			for (; str[length - 1] == L'0'; length--)
+			{
+				str[length - 1] = L'\0';
+			}
+
+			if (str[length - 1] == L'.') str[length - 1] = L'\0';
+		}
+
 		LPWSTR StringToString(LPCSTR str)
 		{
 			int size = MultiByteToWideChar(CP_UTF8, 0, str, -1, NULL, 0);
@@ -63,22 +72,52 @@ namespace C
 
 			return result;
 		}
+		LPWSTR FloatToString(float value)
+		{
+			WCHAR buffer[50];
+			swprintf_s(buffer, L"%f", value);
 
-		__int32 StringToInt32(LPCWSTR str)
-		{
-			return _wtol(str);
+			__TrimDecimalString(buffer);
+			PWCHAR result = new WCHAR[lstrlenW(buffer) + 1];
+			StrCpyW(result, buffer);
+
+			return result;
 		}
-		__int64 StringToInt64(LPCWSTR str)
+		LPWSTR DoubleToString(double value)
 		{
-			return _wtoi64(str);
+			WCHAR buffer[50];
+			swprintf_s(buffer, L"%.20f", value);
+
+			__TrimDecimalString(buffer);
+			PWCHAR result = new WCHAR[lstrlenW(buffer) + 1];
+			StrCpyW(result, buffer);
+
+			return result;
+		}
+
+		__int32 StringToInt32(LPCWSTR str, int base)
+		{
+			return wcstol(str, NULL, base);
+		}
+		unsigned __int32 StringToUInt32(LPCWSTR str, int base)
+		{
+			return wcstoul(str, NULL, base);
+		}
+		__int64 StringToInt64(LPCWSTR str, int base)
+		{
+			return wcstoll(str, NULL, base);
+		}
+		unsigned __int64 StringToUInt64(LPCWSTR str, int base)
+		{
+			return wcstoull(str, NULL, base);
 		}
 		float StringToFloat(LPCWSTR str)
 		{
-			return (float)StringToDouble(str);
+			return wcstof(str, NULL);
 		}
 		double StringToDouble(LPCWSTR str)
 		{
-			return _wtof(str);
+			return wcstod(str, NULL);
 		}
 
 		LPWSTR UInt32ToHexString(unsigned __int32 value)
@@ -105,18 +144,17 @@ namespace C
 		}
 		LPWSTR BytesToHexView(LPBYTE data, DWORD length)
 		{
-			if (!data) return NULL;
-			PWCHAR result = new WCHAR[((length - 1) / 16 + 1) * 76 + 1];
+			PWCHAR result = new WCHAR[((length - 1) / 16 + 1) * 79 + 1];
 
 			for (DWORD i = 0, offset = 0; i < length; i += 16)
 			{
 				LPWSTR line = UInt32ToString(i, 16);
 				StrCpyW(&result[offset], L"00000000");
 				StrCpyW(&result[offset + 8 - lstrlenW(line)], line);
-				StrCpyW(&result[offset + 8], L": ");
+				StrCpyW(&result[offset + 8], L"h: ");
 
 				delete line;
-				offset += 10;
+				offset += 11;
 
 				for (DWORD j = 0; j < 16; j++)
 				{
@@ -138,6 +176,10 @@ namespace C
 
 					offset += 3;
 				}
+
+				result[offset++] = L';';
+				result[offset++] = L' ';
+
 				for (DWORD j = 0; j < 16; j++)
 				{
 					if (i + j < length)
@@ -177,7 +219,7 @@ namespace C
 		}
 		LPWSTR HexadecimalString(DWORD length)
 		{
-			PWCHAR result = NULL;
+			LPWSTR result = NULL;
 
 			LPBYTE data = Bytes(length);
 			if (data)
@@ -233,11 +275,24 @@ namespace C
 				{
 					PWCHAR buffer = new WCHAR[lstrlenW(argv[i]) + 1];
 					StrCpyW(buffer, argv[i]);
-					result->Values[i] = buffer;
+					result->Add(buffer);
 				}
 
 				LocalFree(argv);
 			}
+
+			return result;
+		}
+		LPWSTR GetTimeStamp(BOOL useFileFormat)
+		{
+			time_t currentTime = time(NULL);
+			struct tm *timeInfo = localtime(&currentTime);
+
+			WCHAR buffer[50];
+			DWORD size = (DWORD)wcsftime(buffer, sizeof(buffer), useFileFormat ? L"%Y-%m-%d %H.%M.%S" : L"%Y-%m-%d %H:%M:%S", timeInfo);
+
+			PWCHAR result = new WCHAR[size + 1];
+			StrCpyW(result, buffer);
 
 			return result;
 		}
@@ -349,7 +404,7 @@ namespace C
 
 			if (find != INVALID_HANDLE_VALUE)
 			{
-				vector<LPWSTR> files = vector<LPWSTR>();
+				Array<LPWSTR> *files = new Array<LPWSTR>();
 
 				do
 				{
@@ -360,16 +415,14 @@ namespace C
 							PWCHAR name = new WCHAR[lstrlenW(data.cFileName) + 1];
 							StrCpyW(name, data.cFileName);
 
-							files.push_back(name);
+							files->Add(name);
 						}
 					}
 				}
 				while (FindNextFileW(find, &data));
 				FindClose(find);
 
-				Array<LPWSTR> *result = new Array<LPWSTR>((int)files.size());
-				for (int i = 0; i < result->Count; i++) result->Values[i] = files[i];
-				return result;
+				return files;
 			}
 
 			return NULL;
@@ -458,8 +511,6 @@ namespace C
 
 		LPWSTR GetValueString(HKEY hive, LPCWSTR subkey, LPCWSTR name)
 		{
-			if (!hive || !subkey || !name) return NULL;
-
 			HKEY key = __OpenKey(hive, subkey, KEY_QUERY_VALUE);
 			if (!key) return NULL;
 
@@ -480,8 +531,6 @@ namespace C
 		}
 		BOOL GetValueDword(HKEY hive, LPCWSTR subkey, LPCWSTR name, PDWORD value)
 		{
-			if (!hive || !subkey || !name) return FALSE;
-
 			HKEY key = __OpenKey(hive, subkey, KEY_QUERY_VALUE);
 			if (!key) return FALSE;
 
@@ -493,8 +542,6 @@ namespace C
 		}
 		BOOL SetValueString(HKEY hive, LPCWSTR subkey, LPCWSTR name, LPCWSTR value, BOOL isExpandedString)
 		{
-			if (!hive || !subkey || !name || !value) return FALSE;
-
 			HKEY key = __OpenKey(hive, subkey, KEY_ALL_ACCESS);
 			if (!key) return FALSE;
 
@@ -505,8 +552,6 @@ namespace C
 		}
 		BOOL SetValueDword(HKEY hive, LPCWSTR subkey, LPCWSTR name, DWORD value)
 		{
-			if (!hive || !subkey || !name) return FALSE;
-
 			HKEY key = __OpenKey(hive, subkey, KEY_ALL_ACCESS);
 			if (!key) return FALSE;
 
@@ -517,8 +562,6 @@ namespace C
 		}
 		BOOL DeleteValue(HKEY hive, LPCWSTR subkey, LPCWSTR name)
 		{
-			if (!hive || !subkey || !name) return FALSE;
-
 			HKEY key = __OpenKey(hive, subkey, KEY_ALL_ACCESS);
 			if (!key) return FALSE;
 
@@ -530,8 +573,6 @@ namespace C
 
 		BOOL CreateKey(HKEY hive, LPCWSTR subkey, LPCWSTR name)
 		{
-			if (!hive || !subkey || !name) return FALSE;
-
 			HKEY key = __OpenKey(hive, subkey, KEY_ALL_ACCESS);
 			if (!key) return FALSE;
 
@@ -545,8 +586,6 @@ namespace C
 		}
 		BOOL DeleteKey(HKEY hive, LPCWSTR subkey, LPCWSTR name)
 		{
-			if (!hive || !subkey || !name) return FALSE;
-
 			HKEY key = __OpenKey(hive, subkey, KEY_ALL_ACCESS);
 			if (!key) return FALSE;
 
@@ -584,10 +623,9 @@ namespace C
 
 							PWCHAR buffer = new WCHAR[nameSize + 1];
 							StrCpyW(buffer, name);
-							result->Values[resultIndex++] = buffer;
+							result->Add(buffer);
 						}
 
-						result->Count = resultIndex;
 						delete name;
 					}
 
@@ -627,10 +665,9 @@ namespace C
 
 							PWCHAR buffer = new WCHAR[nameSize + 1];
 							StrCpyW(buffer, name);
-							result->Values[resultIndex++] = buffer;
+							result->Add(buffer);
 						}
 
-						result->Count = resultIndex;
 						delete name;
 					}
 
@@ -840,8 +877,6 @@ namespace C
 		}
 		DWORD GetParentProcessId(DWORD processId)
 		{
-			if (processId == 0) return 0;
-
 			HANDLE snapshot = CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS, 0);
 			if (snapshot == INVALID_HANDLE_VALUE) return 0;
 
@@ -866,6 +901,24 @@ namespace C
 			CloseHandle(snapshot);
 			return parentProcessId;
 		}
+		Array<HWND>* GetProcessWindows(DWORD processID)
+		{
+			Array<HWND> *windows = new Array<HWND>();
+			HWND hwnd = NULL;
+
+			do
+			{
+				hwnd = FindWindowExW(NULL, hwnd, NULL, NULL);
+
+				DWORD windowProcessId = 0;
+				GetWindowThreadProcessId(hwnd, &windowProcessId);
+
+				if (windowProcessId == processID) windows->Add(hwnd);
+			}
+			while (hwnd != NULL);
+
+			return windows;
+		}
 		BOOL InjectDll(HANDLE process, LPCWSTR dllPath)
 		{
 			HMODULE module = GetModuleHandleW(L"kernel32.dll");
@@ -881,6 +934,67 @@ namespace C
 			if (!CreateRemoteThread(process, NULL, NULL, (LPTHREAD_START_ROUTINE)loadLibraryAddress, allocatedMemoryAddress, 0, NULL)) return FALSE;
 
 			return TRUE;
+		}
+	}
+
+	namespace Service
+	{
+		SC_HANDLE GetServiceByName(LPCWSTR name)
+		{
+			SC_HANDLE serviceManager = OpenSCManagerW(NULL, NULL, SC_MANAGER_ALL_ACCESS);
+			if (!serviceManager) return NULL;
+
+			SC_HANDLE service = OpenServiceW(serviceManager, name, SC_MANAGER_ALL_ACCESS);
+
+			CloseServiceHandle(serviceManager);
+			return service;
+		}
+		DWORD GetServiceState(SC_HANDLE service)
+		{
+			SERVICE_STATUS_PROCESS status;
+			DWORD bytesNeeded;
+			if (!QueryServiceStatusEx(service, SC_STATUS_PROCESS_INFO, (LPBYTE)&status, sizeof(SERVICE_STATUS_PROCESS), &bytesNeeded)) return 0;
+
+			return status.dwCurrentState;
+		}
+		DWORD GetServiceProcessId(SC_HANDLE service)
+		{
+			SERVICE_STATUS_PROCESS status;
+			DWORD bytesNeeded;
+			if (!QueryServiceStatusEx(service, SC_STATUS_PROCESS_INFO, (LPBYTE)&status, sizeof(SERVICE_STATUS_PROCESS), &bytesNeeded)) return 0;
+
+			return status.dwProcessId;
+		}
+		BOOL StartServiceWait(SC_HANDLE service, DWORD expectedState, DWORD delayMilliseconds, DWORD timeoutMilliseconds)
+		{
+			BOOL result = FALSE;
+			DWORD startTime = GetTickCount();
+
+			while (!result && GetTickCount() - startTime < timeoutMilliseconds)
+			{
+				StartServiceW(service, 0, NULL);
+				Sleep(delayMilliseconds);
+
+				result = GetServiceState(service) == expectedState;
+			}
+
+			return result;
+		}
+		BOOL ControlServiceWait(SC_HANDLE service, DWORD control, DWORD expectedState, DWORD delayMilliseconds, DWORD timeoutMilliseconds)
+		{
+			BOOL result = FALSE;
+			DWORD startTime = GetTickCount();
+			SERVICE_STATUS_PROCESS status;
+
+			while (!result && GetTickCount() - startTime < timeoutMilliseconds)
+			{
+				ControlService(service, control, (LPSERVICE_STATUS)&status);
+				Sleep(delayMilliseconds);
+
+				result = GetServiceState(service) == expectedState;
+			}
+
+			return result;
 		}
 	}
 

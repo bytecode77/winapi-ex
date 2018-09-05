@@ -102,6 +102,8 @@ Starts a process with low IL (SECURITY_MANDATORY_LOW_RID). The commandline is
 specified in the first argument of CreateSandbox.exe. Otherwise, cmd.exe is
 started with low IL and in a different color.
 
+*Tip: Pass PayloadExe.exe as commandline argument to CreateSandbox.exe, for
+example by using drag&drop. You will see a MessageBox indicating low IL.*
 
 ## Downloads
 
@@ -112,7 +114,7 @@ Compiled binaries for:
 ![](https://bytecode77.com/images/shared/fileicons/exe.png) Inject.exe<br />
 ![](https://bytecode77.com/images/shared/fileicons/exe.png) CreateSandbox.exe
 
-[![](https://bytecode77.com/images/shared/fileicons/zip.png) WinAPIEx 0.8.1 Binaries.zip](https://bytecode77.com/downloads/framework/winapi-ex/WinAPIEx%200.8.1%20Binaries.zip)
+[![](https://bytecode77.com/images/shared/fileicons/zip.png) WinAPIEx 0.8.2 Binaries.zip](https://bytecode77.com/downloads/framework/winapi-ex/WinAPIEx%200.8.2%20Binaries.zip)
 
 ## Project Page
 

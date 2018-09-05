@@ -6,7 +6,7 @@
  * ║   Copyright (c) 2018, bytecode77                                                     ║
  * ║   All rights reserved.                                                               ║
  * ║                                                                                      ║
- * ║   Version 0.8.1                                                                      ║
+ * ║   Version 0.8.2                                                                      ║
  * ║   https://bytecode77.com/framework/winapi-ex                                         ║
  * ║                                                                                      ║
  * ╟──────────────────────────────────────────────────────────────────────────────────────╢
@@ -54,16 +54,54 @@ namespace C
 	//TODO: Review checking of invalid handles (NULL vs INVALID_HANDLE_VALUE, INVALID_SOMETHING_HANDLE, etc.)
 	//FEATURE: Injection bootstrapper for .NET DLL's
 
-	template <typename T>
+	template<typename T>
 	struct Array
 	{
-		int Count;
-		T* Values;
+	private:
+		int _Capacity;
+		int _Count;
+		T* _Values;
 
-		Array(int count)
+		void __ctor(int capacity)
 		{
-			Count = count;
-			Values = new T[count];
+			_Capacity = capacity;
+			_Count = 0;
+			_Values = new T[_Capacity];
+		}
+	public:
+		Array()
+		{
+			__ctor(0);
+		}
+		Array(int capacity)
+		{
+			__ctor(capacity);
+		}
+
+		int Count()
+		{
+			return _Count;
+		}
+		void Add(const T &value)
+		{
+			if (_Count == _Capacity)
+			{
+				_Capacity = (_Capacity & ~0xff) + 0x100;
+
+				T *newValues = new T[_Capacity];
+				memcpy(newValues, _Values, sizeof(T) * _Count);
+
+				delete[] _Values;
+				_Values = newValues;
+			}
+
+			_Values[_Count++] = value;
+		}
+
+		const T& operator [](int index)
+		{
+			if (index < 0 || index >= _Count) throw;
+			return _Values[index];
 		}
 	};
 
@@ -74,7 +112,7 @@ namespace C
 		Programs = CSIDL_PROGRAMS,
 		Controls = CSIDL_CONTROLS,
 		Printers = CSIDL_PRINTERS,
-		MyDocuments = CSIDL_PERSONAL,
+		MyDocuments = CSIDL_MYDOCUMENTS,
 		Favorites = CSIDL_FAVORITES,
 		Startup = CSIDL_STARTUP,
 		Recent = CSIDL_RECENT,
@@ -136,11 +174,13 @@ namespace C
 		LPWSTR UInt32ToString(unsigned __int32 value, int base = 10);
 		LPWSTR Int64ToString(__int64 value, int base = 10);
 		LPWSTR UInt64ToString(unsigned __int64 value, int base = 10);
+		LPWSTR FloatToString(float value);
+		LPWSTR DoubleToString(double value);
 
-		__int32 StringToInt32(LPCWSTR str);
-		//FEATURE: unsinged __int32 StringToUInt32(LPCWSTR str)
-		__int64 StringToInt64(LPCWSTR str);
-		//FEATURE: unsinged __int64 StringToUInt64(LPCWSTR str)
+		__int32 StringToInt32(LPCWSTR str, int base = 10);
+		unsigned __int32 StringToUInt32(LPCWSTR str, int base = 10);
+		__int64 StringToInt64(LPCWSTR str, int base = 10);
+		unsigned __int64 StringToUInt64(LPCWSTR str, int base = 10);
 		float StringToFloat(LPCWSTR str);
 		double StringToDouble(LPCWSTR str);
 
@@ -160,6 +200,7 @@ namespace C
 		LPWSTR GetCurrentUser();
 		BOOL GetWindowsVersion(LPDWORD major, LPDWORD minor);
 		Array<LPWSTR>* GetCommandLineArgs();
+		LPWSTR GetTimeStamp(BOOL useFileFormat = FALSE);
 	}
 
 	namespace Path
@@ -205,6 +246,7 @@ namespace C
 
 	namespace Process
 	{
+		//FEATURE: GetAllProcesses()
 		//FEATURE: BOOL EnableDebugPrivilege();
 		LPCWSTR GetIntegrityLevelName(DWORD integrityLevel);
 
@@ -215,10 +257,19 @@ namespace C
 		LPWSTR GetProcessCommandLine(DWORD processId);
 		DWORD GetProcessIntegrityLevel(HANDLE process);
 		DWORD GetParentProcessId(DWORD processId);
+		Array<HWND>* GetProcessWindows(DWORD processID);
 		BOOL InjectDll(HANDLE process, LPCWSTR dllPath);
 	}
 
-	//FEATURE: namespace Service { ... }
+	namespace Service
+	{
+		//FEATURE: GetAllServices()
+		SC_HANDLE GetServiceByName(LPCWSTR name);
+		DWORD GetServiceState(SC_HANDLE service);
+		DWORD GetServiceProcessId(SC_HANDLE service);
+		BOOL StartServiceWait(SC_HANDLE service, DWORD expectedState, DWORD delayMilliseconds, DWORD timeoutMilliseconds);
+		BOOL ControlServiceWait(SC_HANDLE service, DWORD control, DWORD expectedState, DWORD delayMilliseconds, DWORD timeoutMilliseconds);
+	}
 
 	namespace FileOperation
 	{

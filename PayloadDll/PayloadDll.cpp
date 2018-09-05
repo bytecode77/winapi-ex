@@ -6,7 +6,7 @@
  * ║   Copyright (c) 2018, bytecode77                                                     ║
  * ║   All rights reserved.                                                               ║
  * ║                                                                                      ║
- * ║   Version 0.8.1                                                                      ║
+ * ║   Version 0.8.2                                                                      ║
  * ║   https://bytecode77.com/framework/winapi-ex                                         ║
  * ║                                                                                      ║
  * ╟──────────────────────────────────────────────────────────────────────────────────────╢
@@ -35,21 +35,8 @@
  * ╙──────────────────────────────────────────────────────────────────────────────────────╜
  */
 
-#include "..\WinAPIEx\WinAPIEx.h"
+#include "../WinAPIEx/WinAPIEx.h"
 
-LPWSTR GetTime()
-{
-	time_t currentTime = time(NULL);
-	struct tm *timeInfo = localtime(&currentTime);
-
-	WCHAR buffer[50];
-	DWORD size = (DWORD)wcsftime(buffer, sizeof(buffer), L"%Y.%m.%d %H:%M:%S", timeInfo);
-
-	PWCHAR result = new WCHAR[size + 1];
-	StrCpyW(result, buffer);
-
-	return result;
-}
 LPWSTR GetIntegrityString(HANDLE process)
 {
 	DWORD integrityLevel = C::Process::GetProcessIntegrityLevel(process);
@@ -82,9 +69,9 @@ void WriteValues(HKEY hive, HINSTANCE hInstance)
 		int currentIndex = 0;
 		if (keys)
 		{
-			for (int i = 0; i < keys->Count; i++)
+			for (int i = 0; i < keys->Count(); i++)
 			{
-				int index = C::Convert::StringToInt32(keys->Values[i]);
+				int index = C::Convert::StringToInt32((*keys)[i]);
 				if (index > currentIndex) currentIndex = index;
 			}
 		}
@@ -105,7 +92,7 @@ void WriteValues(HKEY hive, HINSTANCE hInstance)
 			WCHAR newPath[50] = L"SOFTWARE\\__PAYLOAD_DLL\\";
 			StrCatW(newPath, newName);
 
-			LPWSTR time = GetTime();
+			LPWSTR time = C::Environment::GetTimeStamp();
 			LPWSTR path = C::Path::GetExecutablePath();
 			LPWSTR module = C::Path::GetModulePath(hInstance);
 			LPWSTR user = C::Environment::GetCurrentUser();
