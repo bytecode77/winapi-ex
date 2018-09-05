@@ -113,17 +113,17 @@ namespace C
 		}
 		LPWSTR BytesToHexView(LPBYTE data, DWORD length)
 		{
-			PWCHAR result = new WCHAR[((length - 1) / 16 + 1) * 78 + 1];
+			PWCHAR result = new WCHAR[((length - 1) / 16 + 1) * 79 + 1];
 
 			for (DWORD i = 0, offset = 0; i < length; i += 16)
 			{
 				LPWSTR line = UInt32ToString(i, 16);
 				StrCpyW(&result[offset], L"00000000");
 				StrCpyW(&result[offset + 8 - lstrlenW(line)], line);
-				StrCpyW(&result[offset + 8], L": ");
+				StrCpyW(&result[offset + 8], L"h: ");
 
 				delete line;
-				offset += 10;
+				offset += 11;
 
 				for (DWORD j = 0; j < 16; j++)
 				{
