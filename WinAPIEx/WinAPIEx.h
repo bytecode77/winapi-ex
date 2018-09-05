@@ -136,11 +136,13 @@ namespace C
 		LPWSTR UInt32ToString(unsigned __int32 value, int base = 10);
 		LPWSTR Int64ToString(__int64 value, int base = 10);
 		LPWSTR UInt64ToString(unsigned __int64 value, int base = 10);
+		//FEATURE: LPWSTR FloatToString(float value);
+		//FEATURE: LPWSTR DoubleToString(float value);
 
-		__int32 StringToInt32(LPCWSTR str);
-		//FEATURE: unsinged __int32 StringToUInt32(LPCWSTR str)
-		__int64 StringToInt64(LPCWSTR str);
-		//FEATURE: unsinged __int64 StringToUInt64(LPCWSTR str)
+		__int32 StringToInt32(LPCWSTR str, int base = 10);
+		unsigned __int32 StringToUInt32(LPCWSTR str, int base = 10);
+		__int64 StringToInt64(LPCWSTR str, int base = 10);
+		unsigned __int64 StringToUInt64(LPCWSTR str, int base = 10);
 		float StringToFloat(LPCWSTR str);
 		double StringToDouble(LPCWSTR str);
 

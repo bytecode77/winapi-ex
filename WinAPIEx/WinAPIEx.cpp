@@ -72,21 +72,29 @@ namespace C
 			return result;
 		}
 
-		__int32 StringToInt32(LPCWSTR str)
+		__int32 StringToInt32(LPCWSTR str, int base)
 		{
-			return _wtol(str);
+			return wcstol(str, NULL, base);
 		}
-		__int64 StringToInt64(LPCWSTR str)
+		unsigned __int32 StringToUInt32(LPCWSTR str, int base)
 		{
-			return _wtoi64(str);
+			return wcstoul(str, NULL, base);
+		}
+		__int64 StringToInt64(LPCWSTR str, int base)
+		{
+			return wcstoll(str, NULL, base);
+		}
+		unsigned __int64 StringToUInt64(LPCWSTR str, int base)
+		{
+			return wcstoull(str, NULL, base);
 		}
 		float StringToFloat(LPCWSTR str)
 		{
-			return (float)StringToDouble(str);
+			return wcstof(str, NULL);
 		}
 		double StringToDouble(LPCWSTR str)
 		{
-			return _wtof(str);
+			return wcstod(str, NULL);
 		}
 
 		LPWSTR UInt32ToHexString(unsigned __int32 value)
