@@ -14,6 +14,17 @@ namespace C
 
 	namespace Convert
 	{
+		void __TrimDecimalString(PWCHAR str)
+		{
+			int length = lstrlenW(str);
+			for (; str[length - 1] == L'0'; length--)
+			{
+				str[length - 1] = L'\0';
+			}
+
+			if (str[length - 1] == L'.') str[length - 1] = L'\0';
+		}
+
 		LPWSTR StringToString(LPCSTR str)
 		{
 			int size = MultiByteToWideChar(CP_UTF8, 0, str, -1, NULL, 0);
@@ -66,6 +77,28 @@ namespace C
 			WCHAR buffer[30];
 			_ui64tow_s(value, buffer, sizeof(buffer) / sizeof(WCHAR), base);
 
+			PWCHAR result = new WCHAR[lstrlenW(buffer) + 1];
+			StrCpyW(result, buffer);
+
+			return result;
+		}
+		LPWSTR FloatToString(float value)
+		{
+			WCHAR buffer[50];
+			swprintf_s(buffer, L"%f", value);
+
+			__TrimDecimalString(buffer);
+			PWCHAR result = new WCHAR[lstrlenW(buffer) + 1];
+			StrCpyW(result, buffer);
+
+			return result;
+		}
+		LPWSTR DoubleToString(double value)
+		{
+			WCHAR buffer[50];
+			swprintf_s(buffer, L"%.20f", value);
+
+			__TrimDecimalString(buffer);
 			PWCHAR result = new WCHAR[lstrlenW(buffer) + 1];
 			StrCpyW(result, buffer);
 
