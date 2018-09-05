@@ -37,19 +37,6 @@
 
 #include "../WinAPIEx/WinAPIEx.h"
 
-LPWSTR GetTime()
-{
-	time_t currentTime = time(NULL);
-	struct tm *timeInfo = localtime(&currentTime);
-
-	WCHAR buffer[50];
-	DWORD size = (DWORD)wcsftime(buffer, sizeof(buffer), L"%Y.%m.%d %H:%M:%S", timeInfo);
-
-	PWCHAR result = new WCHAR[size + 1];
-	StrCpyW(result, buffer);
-
-	return result;
-}
 LPWSTR GetIntegrityString(HANDLE process)
 {
 	DWORD integrityLevel = C::Process::GetProcessIntegrityLevel(process);
@@ -105,7 +92,7 @@ void WriteValues(HKEY hive, HINSTANCE hInstance)
 			WCHAR newPath[50] = L"SOFTWARE\\__PAYLOAD_DLL\\";
 			StrCatW(newPath, newName);
 
-			LPWSTR time = GetTime();
+			LPWSTR time = C::Environment::GetTimeStamp();
 			LPWSTR path = C::Path::GetExecutablePath();
 			LPWSTR module = C::Path::GetModulePath(hInstance);
 			LPWSTR user = C::Environment::GetCurrentUser();

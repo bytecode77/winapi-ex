@@ -283,6 +283,19 @@ namespace C
 
 			return result;
 		}
+		LPWSTR GetTimeStamp(BOOL useFileFormat)
+		{
+			time_t currentTime = time(NULL);
+			struct tm *timeInfo = localtime(&currentTime);
+
+			WCHAR buffer[50];
+			DWORD size = (DWORD)wcsftime(buffer, sizeof(buffer), useFileFormat ? L"%Y-%m-%d %H.%M.%S" : L"%Y-%m-%d %H:%M:%S", timeInfo);
+
+			PWCHAR result = new WCHAR[size + 1];
+			StrCpyW(result, buffer);
+
+			return result;
+		}
 	}
 
 	namespace Path

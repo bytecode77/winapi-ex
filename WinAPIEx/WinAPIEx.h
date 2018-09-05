@@ -200,6 +200,7 @@ namespace C
 		LPWSTR GetCurrentUser();
 		BOOL GetWindowsVersion(LPDWORD major, LPDWORD minor);
 		Array<LPWSTR>* GetCommandLineArgs();
+		LPWSTR GetTimeStamp(BOOL useFileFormat = FALSE);
 	}
 
 	namespace Path
