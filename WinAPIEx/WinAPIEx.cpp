@@ -113,7 +113,7 @@ namespace C
 		}
 		LPWSTR BytesToHexView(LPBYTE data, DWORD length)
 		{
-			PWCHAR result = new WCHAR[((length - 1) / 16 + 1) * 76 + 1];
+			PWCHAR result = new WCHAR[((length - 1) / 16 + 1) * 78 + 1];
 
 			for (DWORD i = 0, offset = 0; i < length; i += 16)
 			{
@@ -145,6 +145,10 @@ namespace C
 
 					offset += 3;
 				}
+
+				result[offset++] = L';';
+				result[offset++] = L' ';
+
 				for (DWORD j = 0; j < 16; j++)
 				{
 					if (i + j < length)
