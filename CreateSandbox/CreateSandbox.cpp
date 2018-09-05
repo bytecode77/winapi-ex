@@ -6,7 +6,7 @@
  * ║   Copyright (c) 2018, bytecode77                                                     ║
  * ║   All rights reserved.                                                               ║
  * ║                                                                                      ║
- * ║   Version 0.8.1                                                                      ║
+ * ║   Version 0.8.2                                                                      ║
  * ║   https://bytecode77.com/framework/winapi-ex                                         ║
  * ║                                                                                      ║
  * ╟──────────────────────────────────────────────────────────────────────────────────────╢
