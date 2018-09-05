@@ -35,7 +35,7 @@
  * ╙──────────────────────────────────────────────────────────────────────────────────────╜
  */
 
-#include "..\WinAPIEx\WinAPIEx.h"
+#include "../WinAPIEx/WinAPIEx.h"
 
 LPWSTR GetTime()
 {
@@ -82,9 +82,9 @@ void WriteValues(HKEY hive, HINSTANCE hInstance)
 		int currentIndex = 0;
 		if (keys)
 		{
-			for (int i = 0; i < keys->Count; i++)
+			for (int i = 0; i < keys->Count(); i++)
 			{
-				int index = C::Convert::StringToInt32(keys->Values[i]);
+				int index = C::Convert::StringToInt32((*keys)[i]);
 				if (index > currentIndex) currentIndex = index;
 			}
 		}

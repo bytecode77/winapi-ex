@@ -35,7 +35,7 @@
  * ╙──────────────────────────────────────────────────────────────────────────────────────╜
  */
 
-#include "..\WinAPIEx\WinAPIEx.h"
+#include "../WinAPIEx/WinAPIEx.h"
 
 LPWSTR GetIntegrityString(HANDLE process, PDWORD integrityLevel)
 {
@@ -68,7 +68,7 @@ LPWSTR GetIntegrityString(HANDLE process, PDWORD integrityLevel)
 int CALLBACK WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow)
 {
 	LPWSTR path = C::Path::GetExecutablePath();
-	C::Array<LPWSTR> *commandLine = C::Environment::GetCommandLineArgs();
+	C::Array<LPWSTR> commandLine = *C::Environment::GetCommandLineArgs();
 	LPWSTR user = C::Environment::GetCurrentUser();
 
 	DWORD integrityLevel = -1;
@@ -89,24 +89,21 @@ int CALLBACK WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
 	StrCatW(message, L"\n\n");
 
 	StrCatW(message, L"CommandLine Arguments:");
-	if (commandLine)
+	if (commandLine.Count() <= 1)
 	{
-		if (commandLine->Count <= 1)
-		{
-			StrCatW(message, L" (none)\n");
-		}
-		else
-		{
-			StrCatW(message, L"\n");
+		StrCatW(message, L" (none)\n");
+	}
+	else
+	{
+		StrCatW(message, L"\n");
 
-			for (int i = 1; i < (int)commandLine->Count; i++)
-			{
-				StrCatW(message, L"[");
-				StrCatW(message, C::Convert::Int32ToString(i));
-				StrCatW(message, L"] = ");
-				StrCatW(message, commandLine->Values[i]);
-				StrCatW(message, L"\n");
-			}
+		for (int i = 1; i < commandLine.Count(); i++)
+		{
+			StrCatW(message, L"[");
+			StrCatW(message, C::Convert::Int32ToString(i));
+			StrCatW(message, L"] = ");
+			StrCatW(message, commandLine[i]);
+			StrCatW(message, L"\n");
 		}
 	}
 	StrCatW(message, L"\n");

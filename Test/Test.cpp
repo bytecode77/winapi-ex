@@ -1,4 +1,4 @@
-#include "..\WinAPIEx\WinAPIEx.h"
+#include "../WinAPIEx/WinAPIEx.h"
 
 // Playground for testing WinAPIEx functions
 int main()

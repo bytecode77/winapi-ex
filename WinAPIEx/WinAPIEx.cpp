@@ -1,17 +1,7 @@
 #include "WinAPIEx.h"
-#include <vector>
-using namespace std;
 
 namespace C
 {
-	template<typename T>
-	Array<T>* __CreateArray(vector<T> vector)
-	{
-		Array<T> *array = new Array<T>((int)vector.size());
-		for (int i = 0; i < array->Count; i++) array->Values[i] = vector[i];
-		return array;
-	}
-
 	namespace Convert
 	{
 		void __TrimDecimalString(PWCHAR str)
@@ -285,7 +275,7 @@ namespace C
 				{
 					PWCHAR buffer = new WCHAR[lstrlenW(argv[i]) + 1];
 					StrCpyW(buffer, argv[i]);
-					result->Values[i] = buffer;
+					result->Add(buffer);
 				}
 
 				LocalFree(argv);
@@ -401,7 +391,7 @@ namespace C
 
 			if (find != INVALID_HANDLE_VALUE)
 			{
-				vector<LPWSTR> files = vector<LPWSTR>();
+				Array<LPWSTR> *files = new Array<LPWSTR>();
 
 				do
 				{
@@ -412,14 +402,14 @@ namespace C
 							PWCHAR name = new WCHAR[lstrlenW(data.cFileName) + 1];
 							StrCpyW(name, data.cFileName);
 
-							files.push_back(name);
+							files->Add(name);
 						}
 					}
 				}
 				while (FindNextFileW(find, &data));
 				FindClose(find);
 
-				return __CreateArray(files);
+				return files;
 			}
 
 			return NULL;
@@ -620,10 +610,9 @@ namespace C
 
 							PWCHAR buffer = new WCHAR[nameSize + 1];
 							StrCpyW(buffer, name);
-							result->Values[resultIndex++] = buffer;
+							result->Add(buffer);
 						}
 
-						result->Count = resultIndex;
 						delete name;
 					}
 
@@ -663,10 +652,9 @@ namespace C
 
 							PWCHAR buffer = new WCHAR[nameSize + 1];
 							StrCpyW(buffer, name);
-							result->Values[resultIndex++] = buffer;
+							result->Add(buffer);
 						}
 
-						result->Count = resultIndex;
 						delete name;
 					}
 
@@ -902,7 +890,7 @@ namespace C
 		}
 		Array<HWND>* GetProcessWindows(DWORD processID)
 		{
-			vector<HWND> windows = vector<HWND>();
+			Array<HWND> *windows = new Array<HWND>();
 			HWND hwnd = NULL;
 
 			do
@@ -912,11 +900,11 @@ namespace C
 				DWORD windowProcessId = 0;
 				GetWindowThreadProcessId(hwnd, &windowProcessId);
 
-				if (windowProcessId == processID) windows.push_back(hwnd);
+				if (windowProcessId == processID) windows->Add(hwnd);
 			}
 			while (hwnd != NULL);
 
-			return __CreateArray(windows);
+			return windows;
 		}
 		BOOL InjectDll(HANDLE process, LPCWSTR dllPath)
 		{

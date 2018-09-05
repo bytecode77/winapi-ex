@@ -35,47 +35,40 @@
  * ╙──────────────────────────────────────────────────────────────────────────────────────╜
  */
 
-#include "..\WinAPIEx\WinAPIEx.h"
+#include "../WinAPIEx/WinAPIEx.h"
 
-int main() //CALLBACK WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow)
+int main()
 {
 	BOOL result = FALSE;
-	C::Array<LPWSTR> *arguments = C::Environment::GetCommandLineArgs();
+	C::Array<LPWSTR> arguments = *C::Environment::GetCommandLineArgs();
 
-	if (arguments)
+	if (arguments.Count() >= 3)
 	{
-		if (arguments->Count >= 3)
+		int processId = C::Convert::StringToInt32(arguments[1]);
+		if (processId > 0)
 		{
-			int processId = C::Convert::StringToInt32(arguments->Values[1]);
-			if (processId > 0)
+			if (C::File::Exists(arguments[2]))
 			{
-				if (C::File::Exists(arguments->Values[2]))
-				{
-					result = C::Process::InjectDll(OpenProcess(PROCESS_ALL_ACCESS, FALSE, processId), arguments->Values[2]);
-					if (!result) wprintf(L"Injection failed.\n");
-				}
-				else
-				{
-					wprintf(L"File not found: %s\n", arguments->Values[2]);
-				}
+				result = C::Process::InjectDll(OpenProcess(PROCESS_ALL_ACCESS, FALSE, processId), arguments[2]);
+				if (!result) wprintf(L"Injection failed.\n");
 			}
 			else
 			{
-				wprintf(L"ProcessID invalid: %s\n", arguments->Values[1]);
+				wprintf(L"File not found: %s\n", arguments[2]);
 			}
 		}
 		else
 		{
-			wprintf(L"Invalid arguments.\n");
-			wprintf(L"Argument 1: PID\n");
-			wprintf(L"Argument 2: DLL path\n");
-			wprintf(L"\n");
-			wprintf(L"Example: Inject.exe 1234 C:\\payload.dll\n");
+			wprintf(L"ProcessID invalid: %s\n", arguments[1]);
 		}
 	}
 	else
 	{
 		wprintf(L"Invalid arguments.\n");
+		wprintf(L"Argument 1: PID\n");
+		wprintf(L"Argument 2: DLL path\n");
+		wprintf(L"\n");
+		wprintf(L"Example: Inject.exe 1234 C:\\payload.dll\n");
 	}
 
 	if (result) wprintf(L"Injection was successful.\n");
