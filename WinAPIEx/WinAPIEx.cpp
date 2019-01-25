@@ -205,7 +205,7 @@ namespace C
 		LPBYTE Bytes(DWORD length)
 		{
 			HCRYPTPROV cryptProvider;
-			if (!CryptAcquireContextW(&cryptProvider, NULL, L"Microsoft Base Cryptographic Provider v1.0", PROV_RSA_FULL, CRYPT_VERIFYCONTEXT)) return NULL;
+			if (!CryptAcquireContextW(&cryptProvider, NULL, MS_DEF_PROV_W, PROV_RSA_FULL, CRYPT_VERIFYCONTEXT)) return NULL;
 
 			LPBYTE result = new BYTE[length];
 			if (!CryptGenRandom(cryptProvider, length, result))
