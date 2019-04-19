@@ -127,7 +127,7 @@ namespace C
 
 			StrCpyW(result, L"0x00000000");
 			StrCpyW(&result[10 - lstrlenW(buffer)], buffer);
-			delete buffer;
+			delete[] buffer;
 
 			return result;
 		}
@@ -138,7 +138,7 @@ namespace C
 
 			StrCpyW(result, L"0x0000000000000000");
 			StrCpyW(&result[18 - lstrlenW(buffer)], buffer);
-			delete buffer;
+			delete[] buffer;
 
 			return result;
 		}
@@ -153,7 +153,7 @@ namespace C
 				StrCpyW(&result[offset + 8 - lstrlenW(line)], line);
 				StrCpyW(&result[offset + 8], L"h: ");
 
-				delete line;
+				delete[] line;
 				offset += 11;
 
 				for (DWORD j = 0; j < 16; j++)
@@ -165,7 +165,7 @@ namespace C
 						StrCpyW(&result[offset + 2 - lstrlenW(number)], number);
 						result[offset + 2] = L' ';
 
-						delete number;
+						delete[] number;
 					}
 					else
 					{
@@ -205,12 +205,12 @@ namespace C
 		LPBYTE Bytes(DWORD length)
 		{
 			HCRYPTPROV cryptProvider;
-			if (!CryptAcquireContextW(&cryptProvider, NULL, L"Microsoft Base Cryptographic Provider v1.0", PROV_RSA_FULL, CRYPT_VERIFYCONTEXT)) return NULL;
+			if (!CryptAcquireContextW(&cryptProvider, NULL, MS_DEF_PROV_W, PROV_RSA_FULL, CRYPT_VERIFYCONTEXT)) return NULL;
 
 			LPBYTE result = new BYTE[length];
 			if (!CryptGenRandom(cryptProvider, length, result))
 			{
-				delete result;
+				delete[] result;
 				result = NULL;
 			}
 
@@ -228,7 +228,7 @@ namespace C
 				result[length] = L'\0';
 
 				for (DWORD i = 0; i < length; i++) result[i] = L"0123456789abcdef"[data[i] & 15];
-				delete data;
+				delete[] data;
 			}
 
 			return result;
@@ -289,7 +289,7 @@ namespace C
 			struct tm *timeInfo = localtime(&currentTime);
 
 			WCHAR buffer[50];
-			DWORD size = (DWORD)wcsftime(buffer, sizeof(buffer), useFileFormat ? L"%Y-%m-%d %H.%M.%S" : L"%Y-%m-%d %H:%M:%S", timeInfo);
+			DWORD size = (DWORD)wcsftime(buffer, sizeof(buffer) / sizeof(WCHAR), useFileFormat ? L"%Y-%m-%d %H.%M.%S" : L"%Y-%m-%d %H:%M:%S", timeInfo);
 
 			PWCHAR result = new WCHAR[size + 1];
 			StrCpyW(result, buffer);
@@ -322,7 +322,7 @@ namespace C
 				result = new WCHAR[lstrlenW(buffer) + 1];
 				StrCpyW(result, buffer);
 			}
-			delete buffer;
+			delete[] buffer;
 
 			return result;
 		}
@@ -349,7 +349,7 @@ namespace C
 
 			PWCHAR result = new WCHAR[lstrlenW(buffer) + 1];
 			StrCpyW(result, buffer);
-			delete buffer;
+			delete[] buffer;
 
 			return result;
 		}
@@ -400,7 +400,7 @@ namespace C
 
 			WIN32_FIND_DATAW data;
 			HANDLE find = FindFirstFileW(search, &data);
-			delete search;
+			delete[] search;
 
 			if (find != INVALID_HANDLE_VALUE)
 			{
@@ -468,7 +468,7 @@ namespace C
 				}
 				else
 				{
-					delete result;
+					delete[] result;
 					result = NULL;
 				}
 			}
@@ -626,7 +626,7 @@ namespace C
 							result->Add(buffer);
 						}
 
-						delete name;
+						delete[] name;
 					}
 
 					RegCloseKey(key);
@@ -668,7 +668,7 @@ namespace C
 							result->Add(buffer);
 						}
 
-						delete name;
+						delete[] name;
 					}
 
 					RegCloseKey(key);
@@ -834,7 +834,7 @@ namespace C
 								}
 								else
 								{
-									delete result;
+									delete[] result;
 									result = NULL;
 								}
 							}
@@ -968,9 +968,9 @@ namespace C
 		BOOL StartServiceWait(SC_HANDLE service, DWORD expectedState, DWORD delayMilliseconds, DWORD timeoutMilliseconds)
 		{
 			BOOL result = FALSE;
-			DWORD startTime = GetTickCount();
+			ULONGLONG startTime = GetTickCount64();
 
-			while (!result && GetTickCount() - startTime < timeoutMilliseconds)
+			while (!result && GetTickCount64() - startTime < timeoutMilliseconds)
 			{
 				StartServiceW(service, 0, NULL);
 				Sleep(delayMilliseconds);
@@ -983,10 +983,10 @@ namespace C
 		BOOL ControlServiceWait(SC_HANDLE service, DWORD control, DWORD expectedState, DWORD delayMilliseconds, DWORD timeoutMilliseconds)
 		{
 			BOOL result = FALSE;
-			DWORD startTime = GetTickCount();
+			ULONGLONG startTime = GetTickCount64();
 			SERVICE_STATUS_PROCESS status;
 
-			while (!result && GetTickCount() - startTime < timeoutMilliseconds)
+			while (!result && GetTickCount64() - startTime < timeoutMilliseconds)
 			{
 				ControlService(service, control, (LPSERVICE_STATUS)&status);
 				Sleep(delayMilliseconds);
@@ -1024,7 +1024,7 @@ namespace C
 							{
 								LPWSTR destDirectory = Path::GetDirectoryName(destPath);
 								hr = SHCreateItemFromParsingName(destDirectory, NULL, IID_PPV_ARGS(&shellItemTo));
-								delete destDirectory;
+								delete[] destDirectory;
 							}
 
 							if (SUCCEEDED(hr))
@@ -1047,7 +1047,7 @@ namespace C
 										break;
 								}
 
-								if (newFileName) delete newFileName;
+								if (newFileName) delete[] newFileName;
 								if (shellItemTo) shellItemTo->Release();
 							}
 

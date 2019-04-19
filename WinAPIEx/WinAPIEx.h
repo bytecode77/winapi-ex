@@ -58,14 +58,13 @@ namespace C
 	struct Array
 	{
 	private:
-		int _Capacity;
-		int _Count;
-		T* _Values;
+		int _Capacity = 0;
+		int _Count = 0;
+		T* _Values = NULL;
 
 		void __ctor(int capacity)
 		{
 			_Capacity = capacity;
-			_Count = 0;
 			_Values = new T[_Capacity];
 		}
 	public:
