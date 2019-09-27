@@ -35,6 +35,9 @@
  * ╙──────────────────────────────────────────────────────────────────────────────────────╜
  */
 
+#ifndef WINAPIEX_H
+#define WINAPIEX_H
+
 #define _CRT_SECURE_NO_WARNINGS
 #pragma comment(lib, "shlwapi.lib")
 #pragma comment(lib, "netapi32.lib")
@@ -289,3 +292,5 @@ namespace C
 		BOOL Confirmation(LPCWSTR title, LPCWSTR message, BOOL warning = FALSE);
 	}
 }
+
+#endif
