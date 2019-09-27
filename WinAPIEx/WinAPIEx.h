@@ -6,7 +6,7 @@
  * ║   Copyright (c) 2018, bytecode77                                                     ║
  * ║   All rights reserved.                                                               ║
  * ║                                                                                      ║
- * ║   Version 0.8.2                                                                      ║
+ * ║   Version 0.8.4                                                                      ║
  * ║   https://bytecode77.com/framework/winapi-ex                                         ║
  * ║                                                                                      ║
  * ╟──────────────────────────────────────────────────────────────────────────────────────╢
@@ -34,6 +34,9 @@
  * ║                                                                                      ║
  * ╙──────────────────────────────────────────────────────────────────────────────────────╜
  */
+
+#ifndef WINAPIEX_H
+#define WINAPIEX_H
 
 #define _CRT_SECURE_NO_WARNINGS
 #pragma comment(lib, "shlwapi.lib")
@@ -289,3 +292,5 @@ namespace C
 		BOOL Confirmation(LPCWSTR title, LPCWSTR message, BOOL warning = FALSE);
 	}
 }
+
+#endif
