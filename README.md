@@ -75,14 +75,13 @@ Example: Pass PayloadExe.exe as commandline argument to CreateSandbox.exe, e.g. 
 
 ## Downloads
 
-Compiled binaries for:
+Compiled binaries:
 
-![](https://bytecode77.com/public/fileicons/exe.png) PayloadExe.exe<br />
-![](https://bytecode77.com/public/fileicons/dll.png) PayloadDll.dll<br />
-![](https://bytecode77.com/public/fileicons/exe.png) Inject.exe<br />
-![](https://bytecode77.com/public/fileicons/exe.png) CreateSandbox.exe
-
-[![](http://bytecode77.com/public/fileicons/zip.png) WinAPIEx 0.8.4.zip](https://bytecode77.com/downloads/WinAPIEx%200.8.4.zip)
+[![](http://bytecode77.com/public/fileicons/zip.png) WinAPIEx 0.8.4.zip](https://bytecode77.com/downloads/WinAPIEx%200.8.4.zip)<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;![](https://bytecode77.com/public/fileicons/exe.png) PayloadExe.exe<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;![](https://bytecode77.com/public/fileicons/dll.png) PayloadDll.dll<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;![](https://bytecode77.com/public/fileicons/exe.png) Inject.exe<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;![](https://bytecode77.com/public/fileicons/exe.png) CreateSandbox.exe
 
 ## Project Page
 
